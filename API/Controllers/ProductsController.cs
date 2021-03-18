@@ -9,6 +9,7 @@ using System.Linq;
 using AutoMapper;
 using API.Errors;
 using Microsoft.AspNetCore.Http;
+using API.Helpers;
 
 namespace API.Controllers
 {
@@ -17,11 +18,9 @@ namespace API.Controllers
         private readonly IGenericRepository<Product> _productRepo;
         private readonly IGenericRepository<ProductBrand> _productBrandRepo;
         private readonly IGenericRepository<ProductType> _productTypeRepo;
-
         private readonly IMapper _mapper;
-
         public IGenericRepository<Product> ProductsRepo { get; }
-
+        
         public ProductsController(
             IGenericRepository<Product> productRepo, 
             IGenericRepository<ProductBrand> productBrandRepo,
@@ -35,12 +34,20 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<ProductToReturnDTO>>> GetProducts()
+        public async Task<ActionResult<Pagination<ProductToReturnDTO>>> GetProducts([FromQuery]
+           ProductSpecParams productParams)
         {
-            var spec = new ProductsWithTypesAndBrandsSpecification();
+            var spec = new ProductsWithTypesAndBrandsSpecification(productParams);
+
+            var countSpec = new ProductWithFiltersForCountSpecification(productParams);
+
+            var totalItems = await _productRepo.CountAsync(countSpec);
+
             var products = await _productRepo.ListAsync(spec);
 
-            return Ok(_mapper.Map<IReadOnlyList<ProductToReturnDTO>>(products));
+            var data = _mapper.Map<IReadOnlyList<ProductToReturnDTO>>(products);
+
+            return Ok(new Pagination<ProductToReturnDTO>(productParams.PageIndex, productParams.PageSize, totalItems, data));
         }
 
         [HttpGet("{id}")]
