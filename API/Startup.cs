@@ -14,6 +14,7 @@ using System.Linq;
 using API.Errors;
 using API.Extensions;
 using StackExchange.Redis;
+using Infrastructure.Identity;
 
 namespace API
 {
@@ -33,6 +34,10 @@ namespace API
            
             services.AddDbContext<StoreContext>(x =>
                 x.UseSqlite(_configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddDbContext<AppIdentityDbContext>(x=>{
+                x.UseSqlite(_configuration.GetConnectionString("IdentityConnection"));
+            });
                 
             services.AddSingleton<IConnectionMultiplexer>(c => {
                 var configuration = ConfigurationOptions.Parse(_configuration.GetConnectionString("Redis"), true);
@@ -40,6 +45,7 @@ namespace API
             });
 
             services.AddApplicationServices();
+            services.AddIdentitySerices(_configuration);
             services.AddSwaggerDocumentation();
 
             services.AddCors(opt =>{
@@ -68,6 +74,8 @@ namespace API
             app.UseStaticFiles();
 
             app.UseCors("CorsPolicy");
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
