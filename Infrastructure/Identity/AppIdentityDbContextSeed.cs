@@ -17,7 +17,7 @@ namespace Infrastructure.Identity
                     Address = new Address{
                         FirstName = "Bob",
                         LastName = "BObbity",
-                        Streent = "10 the street",
+                        Street = "10 the street",
                         City = "New Yourk",
                         State = "NY",
                         ZipCode = "90210"

@@ -10,7 +10,7 @@ namespace Core.Entities.Identity
 
         public string  LastName { get; set; }
 
-        public string Streent { get; set; }
+        public string Street { get; set; }
         
         public string City { get; set; }
 
