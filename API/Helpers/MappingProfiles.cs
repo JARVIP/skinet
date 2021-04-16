@@ -17,7 +17,6 @@ namespace API.Helpers
             CreateMap<Address, AddressDTO>().ReverseMap();
 
             CreateMap<CustomerBasketDTO, CustomerBasket>().ReverseMap();
-            CreateMap<CustomerBasketDTO, CustomerBasket>().ReverseMap();
             CreateMap<BasketItemDTO, BasketItem>().ReverseMap();
 
 
