@@ -1,8 +1,8 @@
 namespace Core.Entities.OrderAggregate
 {
-    public class DelivaryMethod : BaseEntity
+    public class DeliveryMethod : BaseEntity
     {
-        public string MyProperty { get; set; }
+        public string ShortName { get; set; }
 
         public string DeliveryTime { get; set; }
 
