@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Basket, IBasket, IbasketItem, IBasketTotals } from '../shared/models/basket';
+import { IDeliveryMethod } from '../shared/models/deliveryMethod';
 import { IProduct } from '../shared/models/products';
 
 @Injectable({
@@ -16,8 +17,14 @@ export class BasketService {
   basket$ = this.basketSoure.asObservable();
   private basketTotalSoure = new BehaviorSubject<IBasketTotals>(null);
   basketTotal$ = this.basketTotalSoure.asObservable();
+  shipping = 0;
 
   constructor(private http: HttpClient) { }
+
+  setShippingPrice(deliveryMethod: IDeliveryMethod){
+    this.shipping = deliveryMethod.price;
+    this.calcilateTotals();
+  }
 
   getBasket(id: string){
     return this.http.get(this.baseUrl + 'basket?id=' + id)
@@ -80,6 +87,11 @@ export class BasketService {
     }
   }
 
+  deleteLocalBasket(id: string){
+    this.basketSoure.next(null);
+    this.basketTotalSoure.next(null);
+    localStorage.removeItem('basket_id');
+  }
 
   deleteBasket(basket: IBasket) {
     return this.http.delete(this.baseUrl + 'basket?id='+basket.id).subscribe(()=>{
@@ -93,7 +105,7 @@ export class BasketService {
 
   private calcilateTotals(){
     const basket = this.getCurrentBasketValue();
-    const shipping = 0;
+    const shipping = this.shipping;
     const subtotal = basket.items.reduce((a,b) => (b.price * b.quantity) + a, 0);
     const total = subtotal + shipping;
     this.basketTotalSoure.next({shipping, total, subtotal});

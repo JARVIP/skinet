@@ -118,8 +118,6 @@ namespace API.Controllers
                 UserName = registerDTO.Email
             };
 
-    
-
             var result = await _userManager.CreateAsync(user, registerDTO.Password);
 
             if(!result.Succeeded)
